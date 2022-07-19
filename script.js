@@ -2,11 +2,12 @@ const audio = document.getElementById('audio');
 let ref;
 const actx = new (AudioContext || webkitAudioContext)();
 const ctx = initRenderContext();
-const videoID = '3r_Z5AYJJd4';
+const videoID = 'YBPYlWyKn5E';
 
 async function run() {
   const audioURL = await fetchVideoAudio(videoID);
   console.log('audio URL', audioURL);
+  await renderWaves(audioURL);
 }
 
 run();
@@ -91,7 +92,7 @@ async function fetchVideoAudio(videoID) {
       audio_streams['256kbps'] ||
       audio_streams['128kbps'] ||
       audio_streams['48kbps'];
-    audio.play();
+    //audio.play();
     return audio.src;
   }
 }
@@ -105,14 +106,19 @@ function initRenderContext() {
   return ctx;
 }
 
-function renderWaves(url) {
+async function renderWaves(url) {
   // Load audio
   fetch(url, { mode: 'cors' })
-    .then(function (resp) {
+    .then(resp => {
+      console.log(resp);
       return resp.arrayBuffer();
     })
-    .then(actx.decodeAudioData.bind(actx))
-    .then(function (buffer) {
+    .then(arrayBuffer => {
+      console.log('arraybuffer', arrayBuffer);
+      return actx.decodeAudioData(arrayBuffer);
+    })
+    //.then(actx.decodeAudioData.bind(actx))
+    .then(buffer => {
       // Get data from channel 0 (you will want to measure all/avg.)
       const channel = buffer.getChannelData(0);
 
